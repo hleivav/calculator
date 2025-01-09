@@ -3,6 +3,7 @@ import java.util.Scanner;
 
 public class Main {
     static boolean done = false;
+    static double partialResult = 0;
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -26,38 +27,77 @@ public class Main {
 
     public static void choiceHandler(){
         String userChoice = scanner.nextLine();
-
-        if (userChoice.equals("0")){
-            done = true; 
-        } else if (Integer.parseInt(userChoice) > 0 && Integer.parseInt(userChoice) < 5) {
-            print("The result is: " + operation(userChoice));
-
-        } else {
-            print("Incorrect choice. Try again!");
+        //In case the user enters a none numeric character, the application will catch it.
+        try {
+            double firstNo = 0;
+            double secondNo = 0;
+            int choice = Integer.parseInt(userChoice);
+            if (userChoice.equals("0")){
+                done = true;
+            } else if (Integer.parseInt(userChoice) > 0 && Integer.parseInt(userChoice) < 5) {
+                while (true){
+                    try {
+                        print("Enter the first number: ");
+                        firstNo = Double.parseDouble(scanner.nextLine());
+                        break;
+                    } catch (NumberFormatException e) {
+                        print("Invalid input. Please enter a number.");
+                    }
+                }
+                while (true){
+                    try {
+                        print("Enter the second number: ");
+                        secondNo = Double.parseDouble(scanner.nextLine());
+                        break;
+                    } catch (NumberFormatException e) {
+                        print("Invalid input. Please enter a number.");
+                    }
+                }
+                partialResult = operation(userChoice, firstNo, secondNo);
+                print("The final result is " + partialResult);
+            } else {
+                print("Incorrect choice. Try again!");
+            }
+        } catch (NumberFormatException e) {
+            print("Invalid input. Please enter a number.");
         }
+
     }
 
-    public static double operation(String operationNumber){
-        print("Enter the first number: ");
-        double firstNumber = Double.parseDouble(scanner.nextLine());
-        print("Enter the second number: ");
-        double secondNumber = Double.parseDouble(scanner.nextLine());
-        double result = 0;
+    public static double operation(String operationNumber, double firstNumber, double secondNumber){
+        String operationString = "";
         switch (operationNumber){
             case "1":
-                result = firstNumber + secondNumber;
+                partialResult = firstNumber + secondNumber;
+                operationString = "addition";
                 break;
             case "2":
-                result = firstNumber - secondNumber;
+                partialResult = firstNumber - secondNumber;
+                operationString = "subtraction";
                 break;
             case "3":
-                result = firstNumber * secondNumber;
+                partialResult = firstNumber * secondNumber;
+                operationString = "multiplication";
                 break;
             case "4":
-                result = firstNumber / secondNumber;
+                partialResult = firstNumber / secondNumber;
+                operationString = "division";
                 break;
         }
-        return result;
+        print("The partial result is " + partialResult);
+        print("Do you need to perform another " + operationString + " on this result? Press Y in that case or another key to resume.");
+        //This input is secure. The user can choose between y, Y or anything else.
+        if (scanner.nextLine().equalsIgnoreCase("Y")){
+            print("Enter a new number to perform a new " + operationString);
+            try {
+                double  newNumber = Double.parseDouble(scanner.nextLine());
+                partialResult = operation(operationNumber, partialResult, newNumber);
+            } catch (NumberFormatException e) {
+                print("Invalid input. Please enter a number.");
+            }
+
+        }
+        return partialResult;
     }
 
     public static void print(String stringToPrint){
